@@ -18,11 +18,15 @@ jobs:
       - run: npm install
       - run: npm run typecheck
       - run: npm run build
+      - run: node scripts/check-start-roll.mjs
       - name: Verify package
         run: |
           test -f dist/parti.room.json
           test -f dist/index.html
           test -f dist/room.worker.js
+          test -f dist/cover.svg
+          grep -q '"cover": "cover.svg"' dist/parti.room.json
+          grep -R -q "button\[data-action\]" dist/assets
           grep -q "@parti/worker-sdk" dist/room.worker.js
           grep -q "defineRoom" dist/room.worker.js
           ! grep -Eq "from ['\"]\.\.?/" dist/room.worker.js

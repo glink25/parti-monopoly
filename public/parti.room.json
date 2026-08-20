@@ -3,10 +3,12 @@
   "protocolVersion": 1,
   "id": "parti-monopoly",
   "name": "Parti 大富翁",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageMode": "filesystem",
   "description": "快节奏多人地产经营游戏：买地、拍卖、股票、策略卡与岔路抉择。",
-  "author": { "name": "glink25" },
+  "author": {
+    "name": "glink25"
+  },
   "entry": {
     "ui": "index.html",
     "worker": "room.worker.js"
@@ -15,9 +17,12 @@
     "minPlayers": 2,
     "maxPlayers": 6
   },
-  "sync": { "mode": "snapshot" },
+  "sync": {
+    "mode": "snapshot"
+  },
   "permissions": {
     "network": false,
     "storage": "session"
-  }
+  },
+  "cover": "cover.svg"
 }
