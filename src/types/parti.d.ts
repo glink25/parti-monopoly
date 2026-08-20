@@ -4,6 +4,7 @@ declare module '@parti/worker-sdk' {
 
 type PartiClient = {
   playerId: string;
+  getState(): any;
   action(name: string, payload?: unknown): Promise<unknown> | void;
   onState(handler: (state: any) => void): void;
   onEvent(handlerName: string, handler: (payload: any) => void): void;
