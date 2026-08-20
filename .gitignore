@@ -1,0 +1,6 @@
+node_modules/
+dist/
+dist-local/
+.local-build/
+*.room.zip
+.DS_Store
