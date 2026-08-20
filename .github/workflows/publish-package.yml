@@ -1,0 +1,40 @@
+name: publish-parti-package
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Verify package
+        run: |
+          test -f dist/parti.room.json
+          test -f dist/index.html
+          test -f dist/room.worker.js
+          grep -q "@parti/worker-sdk" dist/room.worker.js
+          grep -q "defineRoom" dist/room.worker.js
+          ! grep -Eq "from ['\"]\.\.?/" dist/room.worker.js
+      - name: Publish dist to parti-package
+        run: |
+          publish_dir="$(mktemp -d)"
+          cp -R dist/. "$publish_dir/"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan parti-package-publish
+          git rm -rf . >/dev/null 2>&1 || true
+          cp -R "$publish_dir/." .
+          git add -A
+          git commit -m "parti package ${GITHUB_SHA}"
+          git push -f origin HEAD:parti-package
