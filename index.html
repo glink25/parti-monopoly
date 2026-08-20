@@ -9,5 +9,44 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/ui/main.ts"></script>
+    <script type="module">
+      // Generic action buttons are recreated when a snapshot changes the turn stage.
+      // Handle them from the stable document root so Start -> Roll remains clickable.
+      document.addEventListener('click', (event) => {
+        const source = event.target;
+        if (!(source instanceof Element)) return;
+        const button = source.closest('button[data-action]');
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (button.classList.contains('disabled')) return;
+
+        const actionName = button.dataset.action;
+        if (!actionName) return;
+
+        if (actionName === 'start') {
+          const current = parti.getState();
+          const firstPlayerId = current?.order?.[0] ?? null;
+          if (firstPlayerId !== parti.playerId) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+              toast.textContent = '由首位玩家开始游戏，开局后即可直接掷骰子';
+              toast.classList.add('show');
+              window.setTimeout(() => toast.classList.remove('show'), 2400);
+            }
+            return;
+          }
+        }
+
+        let payload;
+        try {
+          payload = JSON.parse(decodeURIComponent(button.dataset.payload || 'null'));
+        } catch {
+          payload = undefined;
+        }
+        parti.action(actionName, payload ?? undefined);
+      }, true);
+    </script>
   </body>
 </html>
