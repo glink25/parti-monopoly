@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Verify Parti package contract
+        run: |
+          test -f dist/parti.room.json
+          test -f dist/index.html
+          test -f dist/room.worker.js
+          grep -q "@parti/worker-sdk" dist/room.worker.js
+          grep -q "defineRoom" dist/room.worker.js
+          ! grep -Eq "from ['\"]\.\.?/" dist/room.worker.js
